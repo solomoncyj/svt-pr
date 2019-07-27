@@ -6,7 +6,7 @@ encoding / transcoding video applications.}
 
 Name:           svt-av1
 Version:        0.6.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Scalable Video Technology for AV1 Encoder
 
 # Main library: BSD-2-Clause-Patent
@@ -96,6 +96,9 @@ help2man -N --help-option=-help --version-string=%{version} SvtAv1EncApp > %{bui
 %{_libdir}/pkgconfig/SvtAv1Enc.pc
 
 %changelog
+* Sat Jul 27 2019 Fedora Release Engineering <releng@fedoraproject.org> - 0.6.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
+
 * Fri Jul 05 18:37:55 CEST 2019 Robert-André Mauchin <zebob.m@gmail.com> - 0.6.0-1
 - Release 0.6.0
 
