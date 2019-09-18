@@ -6,7 +6,7 @@ encoding / transcoding video applications.}
 
 Name:           svt-av1
 Version:        0.6.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Scalable Video Technology for AV1 Encoder
 
 # Main library: BSD-2-Clause-Patent
@@ -28,6 +28,8 @@ BuildRequires:  gcc-c++
 BuildRequires:  cmake
 BuildRequires:  yasm
 BuildRequires:  help2man
+BuildRequires:  gstreamer1-devel
+BuildRequires:  gstreamer1-plugins-base-devel
 
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 
@@ -48,12 +50,22 @@ Requires:   %{name}-libs = %{version}-%{release}
 
 This package contains the development files for SVT-AV1.
 
+%package -n     gstreamer1-%{name}
+Summary:        GStreamer 1.0 %{name}-based plug-in
+Requires:       gstreamer1-plugins-base%{?_isa}
+
+%description -n gstreamer1-%{name}
+This package provides %{name}-based GStreamer plug-in.
+
 %prep
 %autosetup -p1 -n SVT-AV1-%{version}
+# Patch build gstreamer plugin
+sed -e "s|install: true,|install: true, include_directories : '../Source/API', link_args : '-lSvtAv1Enc',|" \
+-e "/svtav1enc_dep =/d" -e 's|, svtav1enc_dep||' -e "s|svtav1enc_dep.found()|true|" -i gstreamer-plugin/meson.build
 
 %build
 mkdir _build
-cd _build
+pushd _build
 %cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo \
        -DCMAKE_INSTALL_PREFIX=%{_prefix} \
        -DCMAKE_INSTALL_LIBDIR=%{_lib} \
@@ -64,9 +76,16 @@ cd _build
        -DNATIVE=OFF \
        ..
 %make_build
+popd
+
+pushd gstreamer-plugin
+    export LIBRARY_PATH="$PWD/../Bin/RelWithDebInfo:$LIBRARY_PATH"
+    %meson
+    %meson_build
+popd
 
 %install
-cd _build
+pushd _build
 %make_install
 rm -f %{buildroot}%{_libdir}/*.{a,la}
 
@@ -75,6 +94,11 @@ export PATH=$PATH:%{buildroot}%{_bindir}
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:%{buildroot}%{_libdir}
 help2man -N --help-option=-help --version-string=%{version} SvtAv1DecApp > %{buildroot}%{_mandir}/man1/SvtAv1DecApp.1
 help2man -N --help-option=-help --version-string=%{version} SvtAv1EncApp > %{buildroot}%{_mandir}/man1/SvtAv1EncApp.1
+popd
+
+pushd gstreamer-plugin
+    %meson_install
+popd
 
 %files
 %{_bindir}/SvtAv1DecApp
@@ -95,7 +119,13 @@ help2man -N --help-option=-help --version-string=%{version} SvtAv1EncApp > %{bui
 %{_libdir}/pkgconfig/SvtAv1Dec.pc
 %{_libdir}/pkgconfig/SvtAv1Enc.pc
 
+%files -n gstreamer1-%{name}
+%{_libdir}/gstreamer-1.0/libgstsvtav1enc.so
+
 %changelog
+* Wed Sep 18 2019 Vasiliy Glazov <vascom2@gmail.com> - 0.6.0-3
+- Added gstreamer plugin
+
 * Sat Jul 27 2019 Fedora Release Engineering <releng@fedoraproject.org> - 0.6.0-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
