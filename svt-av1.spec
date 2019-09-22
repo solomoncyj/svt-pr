@@ -26,6 +26,7 @@ ExclusiveArch:  x86_64
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
+BuildRequires:  meson
 BuildRequires:  yasm
 BuildRequires:  help2man
 BuildRequires:  gstreamer1-devel
