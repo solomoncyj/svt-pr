@@ -5,8 +5,8 @@ work-in-progress targeting performance levels applicable to both VOD and Live
 encoding / transcoding video applications.}
 
 Name:           svt-av1
-Version:        0.6.0
-Release:        3%{?dist}
+Version:        0.7.0
+Release:        1%{?dist}
 Summary:        Scalable Video Technology for AV1 Encoder
 
 # Main library: BSD-2-Clause-Patent
@@ -124,6 +124,9 @@ popd
 %{_libdir}/gstreamer-1.0/libgstsvtav1enc.so
 
 %changelog
+* Thu Oct 10 18:51:11 CEST 2019 Robert-André Mauchin <zebob.m@gmail.com> - 0.7.0-1
+- Release 0.7.0
+
 * Wed Sep 18 2019 Vasiliy Glazov <vascom2@gmail.com> - 0.6.0-3
 - Added gstreamer plugin
 
