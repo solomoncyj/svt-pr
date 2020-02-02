@@ -5,8 +5,8 @@ work-in-progress targeting performance levels applicable to both VOD and Live
 encoding / transcoding video applications.}
 
 Name:           svt-av1
-Version:        0.8.0
-Release:        2%{?dist}
+Version:        0.8.1
+Release:        1%{?dist}
 Summary:        Scalable Video Technology for AV1 Encoder
 
 # Main library: BSD-2-Clause-Patent
@@ -67,6 +67,10 @@ sed -e "s|install: true,|install: true, include_directories : [ include_director
 %build
 mkdir _build
 pushd _build
+# https://github.com/OpenVisualCloud/SVT-AV1/issues/999
+# Use -fcommon until all tho global variables are fixed upstream
+export CFLAGS="%build_cflags -fcommon"
+export CXXFLAGS="%build_cxxflags -fcommon"
 %cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo \
        -DCMAKE_INSTALL_PREFIX=%{_prefix} \
        -DCMAKE_INSTALL_LIBDIR=%{_lib} \
@@ -94,7 +98,7 @@ mkdir -p %{buildroot}/%{_mandir}/man1
 export PATH=$PATH:%{buildroot}%{_bindir}
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:%{buildroot}%{_libdir}
 help2man -N --help-option=-help --version-string=%{version} SvtAv1DecApp > %{buildroot}%{_mandir}/man1/SvtAv1DecApp.1
-help2man -N --help-option=-help --version-string=%{version} SvtAv1EncApp > %{buildroot}%{_mandir}/man1/SvtAv1EncApp.1
+help2man -N --help-option=-help --no-discard-stderr --version-string=%{version} SvtAv1EncApp > %{buildroot}%{_mandir}/man1/SvtAv1EncApp.1
 popd
 
 pushd gstreamer-plugin
@@ -124,6 +128,9 @@ popd
 %{_libdir}/gstreamer-1.0/libgstsvtav1enc.so
 
 %changelog
+* Sun Feb 02 22:33:18 CET 2020 Robert-André Mauchin <zebob.m@gmail.com> - 0.8.1-1
+- Update to 0.8.1
+
 * Fri Jan 31 2020 Fedora Release Engineering <releng@fedoraproject.org> - 0.8.0-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
 
