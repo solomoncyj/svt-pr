@@ -5,17 +5,17 @@ work-in-progress targeting performance levels applicable to both VOD and Live
 encoding / transcoding video applications.}
 
 Name:           svt-av1
-Version:        0.8.3
+Version:        0.8.4
 Release:        1%{?dist}
 Summary:        Scalable Video Technology for AV1 Encoder
 
 # Main library: BSD-2-Clause-Patent
 # Source/Lib/Common/Codec/EbHmCode.c: BSD
-# Source/App/EncApp/EbAppString.*
+# Source/App/EncApp/EbAppString.*
 # Source/Lib/Common/Codec/EbString.*
 # Source/Lib/Common/Codec/vector.*: MIT
-# Source/Lib/Common/ASM_SSE2/x86inc.asm: ISC
-# Source/App/DecApp/EbMD5Utility.*: PublicDomain
+# Source/Lib/Common/ASM_SSE2/x86inc.asm: ISC
+# Source/App/DecApp/EbMD5Utility.*: PublicDomain
 License:        BSD-2-Clause-Patent and BSD and MIT and ISC and Public Domain
 URL:            https://github.com/OpenVisualCloud/SVT-AV1
 Source0:        %url/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -128,6 +128,9 @@ popd
 %{_libdir}/gstreamer-1.0/libgstsvtav1enc.so
 
 %changelog
+* Tue Jun 30 18:53:17 CEST 2020 Robert-André Mauchin <zebob.m@gmail.com> - 0.8.4-1
+- Update to 0.8.4 (#1851799)
+
 * Fri Jun 19 18:36:37 CEST 2020 Robert-André Mauchin <zebob.m@gmail.com> - 0.8.3-1
 - Update to 0.8.3
 
