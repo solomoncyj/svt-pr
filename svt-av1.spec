@@ -65,10 +65,8 @@ sed -e "s|install: true,|install: true, include_directories : [ include_director
 -e "/svtav1enc_dep =/d" -e 's|, svtav1enc_dep||' -e "s|svtav1enc_dep.found()|true|" -i gstreamer-plugin/meson.build
 
 %build
-mkdir _build
-pushd _build
 # https://github.com/OpenVisualCloud/SVT-AV1/issues/999
-# Use -fcommon until all tho global variables are fixed upstream
+# Use -fcommon until all the global variables are fixed upstream
 export CFLAGS="%build_cflags -fcommon"
 export CXXFLAGS="%build_cxxflags -fcommon"
 %cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo \
@@ -80,20 +78,18 @@ export CXXFLAGS="%build_cxxflags -fcommon"
        -DBUILD_TESTING=OFF \
        -DNATIVE=OFF \
        ..
-%make_build
-popd
+%cmake_build
 
-pushd gstreamer-plugin
-    export LIBRARY_PATH="$PWD/../Bin/RelWithDebInfo:$LIBRARY_PATH"
-    %meson
-    %meson_build
-popd
+cd gstreamer-plugin
+export LIBRARY_PATH="$PWD/../Bin/RelWithDebInfo:$LIBRARY_PATH"
+%meson
+%meson_build
 
 %install
-pushd _build
-%make_install
+%cmake_install
 rm -f %{buildroot}%{_libdir}/*.{a,la}
 
+pushd %{_vpath_builddir}
 mkdir -p %{buildroot}/%{_mandir}/man1
 export PATH=$PATH:%{buildroot}%{_bindir}
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:%{buildroot}%{_libdir}
@@ -101,9 +97,8 @@ help2man -N --help-option=-help --version-string=%{version} SvtAv1DecApp > %{bui
 help2man -N --help-option=-help --no-discard-stderr --version-string=%{version} SvtAv1EncApp > %{buildroot}%{_mandir}/man1/SvtAv1EncApp.1
 popd
 
-pushd gstreamer-plugin
-    %meson_install
-popd
+cd gstreamer-plugin
+%meson_install
 
 %files
 %{_bindir}/SvtAv1DecApp
