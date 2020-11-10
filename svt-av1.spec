@@ -6,7 +6,7 @@ encoding / transcoding video applications.}
 
 Name:           svt-av1
 Version:        0.8.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Scalable Video Technology for AV1 Encoder
 
 # Main library: BSD-2-Clause-Patent
@@ -17,9 +17,12 @@ Summary:        Scalable Video Technology for AV1 Encoder
 # Source/Lib/Common/ASM_SSE2/x86inc.asm: ISC
 # Source/App/DecApp/EbMD5Utility.*: PublicDomain
 License:        BSD-2-Clause-Patent and BSD and MIT and ISC and Public Domain
-URL:            https://github.com/OpenVisualCloud/SVT-AV1
+URL:            https://github.com/AOMediaCodec
 Source0:        %url/archive/v%{version}/%{name}-%{version}.tar.gz
-
+#
+# https://github.com/AOMediaCodec/SVT-AV1/pull/1568
+Patch0:         1568-backport.patch
+#
 # 64Bits, 5th Generation Intel® Core™ processor only
 ExclusiveArch:  x86_64
 
@@ -65,40 +68,28 @@ sed -e "s|install: true,|install: true, include_directories : [ include_director
 -e "/svtav1enc_dep =/d" -e 's|, svtav1enc_dep||' -e "s|svtav1enc_dep.found()|true|" -i gstreamer-plugin/meson.build
 
 %build
-# https://github.com/OpenVisualCloud/SVT-AV1/issues/999
-# Use -fcommon until all the global variables are fixed upstream
-export CFLAGS="%build_cflags -fcommon"
-export CXXFLAGS="%build_cxxflags -fcommon"
-%cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-       -DCMAKE_INSTALL_PREFIX=%{_prefix} \
-       -DCMAKE_INSTALL_LIBDIR=%{_lib} \
-       -DCMAKE_ASM_NASM_COMPILER=yasm \
-       -DCMAKE_SKIP_INSTALL_RPATH=ON \
-       -DBUILD_SHARED_LIBS=ON \
-       -DBUILD_TESTING=OFF \
-       -DNATIVE=OFF \
-       ..
+%cmake \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo
 %cmake_build
 
-cd gstreamer-plugin
-export LIBRARY_PATH="$PWD/../Bin/RelWithDebInfo:$LIBRARY_PATH"
+export LIBRARY_PATH="$LIBRARY_PATH:$(pwd)/Bin/RelWithDebInfo"
+pushd gstreamer-plugin
 %meson
 %meson_build
+popd
 
 %install
 %cmake_install
 rm -f %{buildroot}%{_libdir}/*.{a,la}
 
-pushd %{_vpath_builddir}
-mkdir -p %{buildroot}/%{_mandir}/man1
-export PATH=$PATH:%{buildroot}%{_bindir}
+install -d -m0755 %{buildroot}/%{_mandir}/man1
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:%{buildroot}%{_libdir}
-help2man -N --help-option=-help --version-string=%{version} SvtAv1DecApp > %{buildroot}%{_mandir}/man1/SvtAv1DecApp.1
-help2man -N --help-option=-help --no-discard-stderr --version-string=%{version} SvtAv1EncApp > %{buildroot}%{_mandir}/man1/SvtAv1EncApp.1
-popd
+help2man -N --help-option=-help --version-string=%{version} %{buildroot}%{_bindir}/SvtAv1DecApp > %{buildroot}%{_mandir}/man1/SvtAv1DecApp.1
+help2man -N --help-option=-help --no-discard-stderr --version-string=%{version} %{buildroot}%{_bindir}/SvtAv1EncApp > %{buildroot}%{_mandir}/man1/SvtAv1EncApp.1
 
-cd gstreamer-plugin
+pushd gstreamer-plugin
 %meson_install
+popd
 
 %files
 %{_bindir}/SvtAv1DecApp
@@ -123,6 +114,9 @@ cd gstreamer-plugin
 %{_libdir}/gstreamer-1.0/libgstsvtav1enc.so
 
 %changelog
+* Tue Nov 10 2020 Andreas Schneider <asn@redhat.com> - 0.8.5-2
+- Add patch to fix building on modern Linux system
+
 * Tue Nov 10 11:38:19 CET 2020 Robert-André Mauchin <zebob.m@gmail.com> - 0.8.5-1
 - Update to 0.8.5
 - Close: rhbz#1876641
