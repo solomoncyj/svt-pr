@@ -5,8 +5,8 @@ work-in-progress targeting performance levels applicable to both VOD and Live
 encoding / transcoding video applications.}
 
 Name:           svt-av1
-Version:        0.8.5
-Release:        2%{?dist}
+Version:        0.8.6
+Release:        1%{?dist}
 Summary:        Scalable Video Technology for AV1 Encoder
 
 # Main library: BSD-2-Clause-Patent
@@ -17,12 +17,9 @@ Summary:        Scalable Video Technology for AV1 Encoder
 # Source/Lib/Common/ASM_SSE2/x86inc.asm: ISC
 # Source/App/DecApp/EbMD5Utility.*: PublicDomain
 License:        BSD-2-Clause-Patent and BSD and MIT and ISC and Public Domain
-URL:            https://github.com/AOMediaCodec
+URL:            https://github.com/AOMediaCodec/SVT-AV1
 Source0:        %url/archive/v%{version}/%{name}-%{version}.tar.gz
-#
-# https://github.com/AOMediaCodec/SVT-AV1/pull/1568
-Patch0:         1568-backport.patch
-#
+
 # 64Bits, 5th Generation Intel® Core™ processor only
 ExclusiveArch:  x86_64
 
@@ -114,6 +111,10 @@ popd
 %{_libdir}/gstreamer-1.0/libgstsvtav1enc.so
 
 %changelog
+* Sat Dec 05 20:20:29 CET 2020 Robert-André Mauchin <zebob.m@gmail.com> - 0.8.6-1
+- Update to 0.8.6
+- Close: rhbz#1902481
+
 * Tue Nov 10 2020 Andreas Schneider <asn@redhat.com> - 0.8.5-2
 - Add patch to fix building on modern Linux system
 
