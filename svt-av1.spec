@@ -95,8 +95,8 @@ popd
 %{_mandir}/man1/SvtAv1EncApp.1*
 
 %files libs
-%license LICENSE.md
-%doc Docs CHANGELOG.md NOTICES.md README.md STYLE.md
+%license LICENSE.md PATENTS.md
+%doc Docs CHANGELOG.md CONTRIBUTING.md README.md STYLE.md
 %{_libdir}/libSvtAv1Dec.so.0*
 %{_libdir}/libSvtAv1Enc.so.0*
 
