@@ -6,7 +6,7 @@ encoding / transcoding video applications.}
 
 Name:           svt-av1
 Version:        0.8.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Scalable Video Technology for AV1 Encoder
 
 # Main library: BSD-2-Clause-Patent
@@ -111,6 +111,9 @@ popd
 %{_libdir}/gstreamer-1.0/libgstsvtav1enc.so
 
 %changelog
+* Wed Jan 27 2021 Fedora Release Engineering <releng@fedoraproject.org> - 0.8.6-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
+
 * Sat Dec 05 20:20:29 CET 2020 Robert-André Mauchin <zebob.m@gmail.com> - 0.8.6-1
 - Update to 0.8.6
 - Close: rhbz#1902481
