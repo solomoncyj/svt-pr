@@ -6,7 +6,7 @@ encoding / transcoding video applications.}
 
 Name:           svt-av1
 Version:        0.8.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Scalable Video Technology for AV1 Encoder
 
 # Main library: BSD-2-Clause-Patent
@@ -19,6 +19,8 @@ Summary:        Scalable Video Technology for AV1 Encoder
 License:        BSD-2-Clause-Patent and BSD and MIT and ISC and Public Domain
 URL:            https://github.com/AOMediaCodec/SVT-AV1
 Source0:        %url/archive/v%{version}/%{name}-%{version}.tar.gz
+# x64inc: mark as noexec
+Patch0:         https://gitlab.com/1480c1/SVT-AV1/-/commit/8f9acb7a6215c49297f9cb6c574150e48d8f5b76.patch#/0001-mark-as-noexec.patch
 
 # 64Bits, 5th Generation Intel® Core™ processor only
 ExclusiveArch:  x86_64
@@ -65,7 +67,6 @@ sed -e "s|install: true,|install: true, include_directories : [ include_director
 -e "/svtav1enc_dep =/d" -e 's|, svtav1enc_dep||' -e "s|svtav1enc_dep.found()|true|" -i gstreamer-plugin/meson.build
 
 %build
-export LDFLAGS="%build_ldflags -Wl,-znoexecstack"
 %cmake \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo
 %cmake_build
@@ -112,6 +113,9 @@ popd
 %{_libdir}/gstreamer-1.0/libgstsvtav1enc.so
 
 %changelog
+* Wed Feb 17 21:30:29 CET 2021 Robert-André Mauchin <zebob.m@gmail.com> - 0.8.6-4
+- Use upstream patch to fix rhbz#1927739
+
 * Wed Feb 17 18:28:38 CET 2021 Robert-André Mauchin <zebob.m@gmail.com> - 0.8.6-3
 - Add noexecstack
 - Fix: rhbz#1927739
