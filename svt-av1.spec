@@ -6,7 +6,7 @@ encoding / transcoding video applications.}
 
 Name:           svt-av1
 Version:        0.8.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Scalable Video Technology for AV1 Encoder
 
 # Main library: BSD-2-Clause-Patent
@@ -65,6 +65,7 @@ sed -e "s|install: true,|install: true, include_directories : [ include_director
 -e "/svtav1enc_dep =/d" -e 's|, svtav1enc_dep||' -e "s|svtav1enc_dep.found()|true|" -i gstreamer-plugin/meson.build
 
 %build
+export LDFLAGS="%build_ldflags -Wl,-znoexecstack"
 %cmake \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo
 %cmake_build
@@ -111,6 +112,10 @@ popd
 %{_libdir}/gstreamer-1.0/libgstsvtav1enc.so
 
 %changelog
+* Wed Feb 17 18:28:38 CET 2021 Robert-André Mauchin <zebob.m@gmail.com> - 0.8.6-3
+- Add noexecstack
+- Fix: rhbz#1927739
+
 * Wed Jan 27 2021 Fedora Release Engineering <releng@fedoraproject.org> - 0.8.6-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
 
