@@ -5,7 +5,8 @@ work-in-progress targeting performance levels applicable to both VOD and Live
 encoding / transcoding video applications.}
 
 Name:           svt-av1
-Version:        0.8.6
+Version:        0.8.7
+%global commit  3971c982311d49f9355dc8dccdcf8d21b70fa624
 Release:        %autorelease
 Summary:        Scalable Video Technology for AV1 Encoder
 
@@ -16,11 +17,9 @@ Summary:        Scalable Video Technology for AV1 Encoder
 # Source/Lib/Common/Codec/vector.*: MIT
 # Source/Lib/Common/ASM_SSE2/x86inc.asm: ISC
 # Source/App/DecApp/EbMD5Utility.*: PublicDomain
-License:        BSD-2-Clause-Patent and BSD and MIT and ISC and Public Domain
-URL:            https://github.com/AOMediaCodec/SVT-AV1
-Source0:        %url/archive/v%{version}/%{name}-%{version}.tar.gz
-# x64inc: mark as noexec
-Patch0:         https://gitlab.com/1480c1/SVT-AV1/-/commit/8f9acb7a6215c49297f9cb6c574150e48d8f5b76.patch#/0001-mark-as-noexec.patch
+License:        BSD and MIT and ISC and Public Domain
+URL:            https://gitlab.com/AOMediaCodec/SVT-AV1
+Source0:        %url/-/archive/v%{version}/%{name}-%{version}.tar.bz2
 
 # 64Bits, 5th Generation Intel® Core™ processor only
 ExclusiveArch:  x86_64
@@ -61,7 +60,7 @@ Requires:       gstreamer1-plugins-base%{?_isa}
 This package provides %{name}-based GStreamer plug-in.
 
 %prep
-%autosetup -p1 -n SVT-AV1-%{version}
+%autosetup -p1 -n SVT-AV1-v%{version}-%{commit}
 # Patch build gstreamer plugin
 sed -e "s|install: true,|install: true, include_directories : [ include_directories('../Source/API') ], link_args : '-lSvtAv1Enc',|" \
 -e "/svtav1enc_dep =/d" -e 's|, svtav1enc_dep||' -e "s|svtav1enc_dep.found()|true|" -i gstreamer-plugin/meson.build
