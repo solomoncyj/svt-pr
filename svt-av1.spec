@@ -47,10 +47,19 @@ This package contains SVT-AV1 libraries.
 %package devel
 Summary:    Development files for SVT-AV1
 Requires:   %{name}-libs = %{version}-%{release}
+Recommends: %{name}-devel-docs = %{version}-%{release}
 
 %description devel %_description.
 
 This package contains the development files for SVT-AV1.
+
+%package devel-docs
+Summary:    Development documentation for SVT-AV1
+BuildArch:  noarch
+
+%description devel-docs %_description.
+
+This package contains the documentation for development of SVT-AV1.
 
 %package -n     gstreamer1-%{name}
 Summary:        GStreamer 1.0 %{name}-based plug-in
@@ -97,7 +106,7 @@ popd
 
 %files libs
 %license LICENSE.md PATENTS.md
-%doc Docs CHANGELOG.md CONTRIBUTING.md README.md STYLE.md
+%doc CHANGELOG.md CONTRIBUTING.md README.md
 %{_libdir}/libSvtAv1Dec.so.0*
 %{_libdir}/libSvtAv1Enc.so.0*
 
@@ -107,6 +116,10 @@ popd
 %{_libdir}/libSvtAv1Enc.so
 %{_libdir}/pkgconfig/SvtAv1Dec.pc
 %{_libdir}/pkgconfig/SvtAv1Enc.pc
+
+%files devel-docs
+%license LICENSE.md PATENTS.md
+%doc Docs
 
 %files -n gstreamer1-%{name}
 %{_libdir}/gstreamer-1.0/libgstsvtav1enc.so
