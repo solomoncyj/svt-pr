@@ -5,12 +5,12 @@ work-in-progress targeting performance levels applicable to both VOD and Live
 encoding / transcoding video applications.}
 
 Name:           svt-av1
-Version:        0.9.0
-%global commit  fdf4f36867bba068e221965d12c5975c509845da
+Version:        1.1.0
+%global commit  6e87a1de98281840abebc030781780edd822bae5
 Release:        %autorelease
 Summary:        Scalable Video Technology for AV1 Encoder
 
-# Main library: BSD-2-Clause-Patent
+# Main library: BSD-3
 # Source/Lib/Common/Codec/EbHmCode.c: BSD
 # Source/App/EncApp/EbAppString.*
 # Source/Lib/Common/Codec/EbString.*
@@ -108,7 +108,7 @@ popd
 %license LICENSE.md PATENTS.md
 %doc CHANGELOG.md CONTRIBUTING.md README.md
 %{_libdir}/libSvtAv1Dec.so.0*
-%{_libdir}/libSvtAv1Enc.so.0*
+%{_libdir}/libSvtAv1Enc.so.1*
 
 %files devel
 %{_includedir}/%{name}
