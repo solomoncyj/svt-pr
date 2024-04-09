@@ -5,8 +5,7 @@ work-in-progress targeting performance levels applicable to both VOD and Live
 encoding / transcoding video applications.}
 
 Name:           svt-av1
-Version:        1.4.1
-%global commit  018276d714ce65d9b586f6205ee016cbd8d5425d
+Version:        2.1.0
 Release:        %autorelease
 Summary:        Scalable Video Technology for AV1 Encoder
 
@@ -20,38 +19,39 @@ Summary:        Scalable Video Technology for AV1 Encoder
 # Source/App/DecApp/EbMD5Utility.*: PublicDomain
 License:        LicenseRef-BSD-3-Clause-Clear-WITH-AdditionRef-AOMPL-1.0 AND MIT AND ISC AND LicenseRef-Fedora-Public-Domain
 URL:            https://gitlab.com/AOMediaCodec/SVT-AV1
-Source0:        %url/-/archive/v%{version}/%{name}-%{version}.tar.bz2
+Source0:        %url/-/archive/v%{version}/SVT-AV1-v%{version}.tar.bz2
 
+BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
-BuildRequires:  cmake
+BuildRequires:  help2man
 BuildRequires:  meson
 BuildRequires:  nasm
-BuildRequires:  help2man
-BuildRequires:  gstreamer1-devel
-BuildRequires:  gstreamer1-plugins-base-devel
+BuildRequires : pkgconfig(gstreamer-1.0)
+BuildRequires : pkgconfig(gstreamer-base-1.0)
+BuildRequires : pkgconfig(gstreamer-video-1.0)
 
-Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
+Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description %_description
 
-%package libs
+%package    libs
 Summary:    SVT-AV1 libraries
 
 %description libs %_description
 
 This package contains SVT-AV1 libraries.
 
-%package devel
+%package    devel
 Summary:    Development files for SVT-AV1
-Requires:   %{name}-libs = %{version}-%{release}
-Recommends: %{name}-devel-docs = %{version}-%{release}
+Requires:   %{name}-libs = %{?epoch:%{epoch}:}%{version}-%{release}
+Recommends: %{name}-devel-docs = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description devel %_description.
 
 This package contains the development files for SVT-AV1.
 
-%package devel-docs
+%package    devel-docs
 Summary:    Development documentation for SVT-AV1
 BuildArch:  noarch
 
@@ -67,15 +67,14 @@ Requires:       gstreamer1-plugins-base%{?_isa}
 This package provides %{name}-based GStreamer plug-in.
 
 %prep
-%autosetup -p1 -n SVT-AV1-v%{version}-%{commit}
+%autosetup -p1 -n SVT-AV1-v%{version}
 # Patch build gstreamer plugin
 sed -e "s|install: true,|install: true, include_directories : [ include_directories('../Source/API') ], link_args : '-lSvtAv1Enc',|" \
 -e "/svtav1enc_dep =/d" -e 's|, svtav1enc_dep||' -e "s|svtav1enc_dep.found()|true|" -i gstreamer-plugin/meson.build
 
 %build
 %cmake \
-        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-        -DENABLE_NASM=yes
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo
 %cmake_build
 
 export LIBRARY_PATH="$LIBRARY_PATH:$(pwd)/Bin/RelWithDebInfo"
@@ -107,7 +106,7 @@ popd
 %license LICENSE.md PATENTS.md
 %doc CHANGELOG.md CONTRIBUTING.md README.md
 %{_libdir}/libSvtAv1Dec.so.0*
-%{_libdir}/libSvtAv1Enc.so.1*
+%{_libdir}/libSvtAv1Enc.so.2*
 
 %files devel
 %{_includedir}/%{name}
@@ -121,6 +120,7 @@ popd
 %doc Docs
 
 %files -n gstreamer1-%{name}
+%license LICENSE.md PATENTS.md
 %{_libdir}/gstreamer-1.0/libgstsvtav1enc.so
 
 %changelog
