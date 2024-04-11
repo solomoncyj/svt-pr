@@ -26,7 +26,7 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
 BuildRequires:  meson
-BuildRequires:  yasm
+BuildRequires:  nasm
 BuildRequires:  help2man
 BuildRequires:  gstreamer1-devel
 BuildRequires:  gstreamer1-plugins-base-devel
@@ -74,7 +74,8 @@ sed -e "s|install: true,|install: true, include_directories : [ include_director
 
 %build
 %cmake \
-    -DCMAKE_BUILD_TYPE=RelWithDebInfo
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+        -DENABLE_NASM=yes
 %cmake_build
 
 export LIBRARY_PATH="$LIBRARY_PATH:$(pwd)/Bin/RelWithDebInfo"
