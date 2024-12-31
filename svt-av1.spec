@@ -5,7 +5,7 @@ work-in-progress targeting performance levels applicable to both VOD and Live
 encoding / transcoding video applications.}
 
 Name:           svt-av1
-Version:        2.1.0
+Version:        2.3.0
 Release:        %autorelease
 Summary:        Scalable Video Technology for AV1 Encoder
 
@@ -30,6 +30,7 @@ BuildRequires:  nasm
 BuildRequires : pkgconfig(gstreamer-1.0)
 BuildRequires : pkgconfig(gstreamer-base-1.0)
 BuildRequires : pkgconfig(gstreamer-video-1.0)
+BuildRequires:  cpuinfo-devel
 
 Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
@@ -37,6 +38,10 @@ Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %package    libs
 Summary:    SVT-AV1 libraries
+
+Provides: bundled(fastfeat)
+Provides: bundled(safestringlib)
+
 
 %description libs %_description
 
@@ -72,9 +77,23 @@ This package provides %{name}-based GStreamer plug-in.
 sed -e "s|install: true,|install: true, include_directories : [ include_directories('../Source/API') ], link_args : '-lSvtAv1Enc',|" \
 -e "/svtav1enc_dep =/d" -e 's|, svtav1enc_dep||' -e "s|svtav1enc_dep.found()|true|" -i gstreamer-plugin/meson.build
 
+#mitigate name collisions
+mv third_party/safestringlib/LICENSE third_party/safestringlib/LICENSE.safestringlib
+mv third_party/fastfeat/LICENSE third_party/fastfeat/LICENSE.fastfeat
+
+#sanitize third_party
+rm -rf  third_party/cpuinfo
+rm -rf  third_party/aom*
+rm -rf  third_party/googletest
+
+
 %build
 %cmake \
-        -DCMAKE_BUILD_TYPE=RelWithDebInfo
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+        -DUSE_EXTERNAL_CPUINFO=ON \
+        -DSVT_AV1_LTO=ON \
+        -DENABLE_AVX512=ON \
+        -G Ninja # since it is already installed and it is better
 %cmake_build
 
 export LIBRARY_PATH="$LIBRARY_PATH:$(pwd)/Bin/RelWithDebInfo"
@@ -89,7 +108,6 @@ rm -f %{buildroot}%{_libdir}/*.{a,la}
 
 install -d -m0755 %{buildroot}/%{_mandir}/man1
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:%{buildroot}%{_libdir}
-help2man -N --help-option=-help --version-string=%{version} %{buildroot}%{_bindir}/SvtAv1DecApp > %{buildroot}%{_mandir}/man1/SvtAv1DecApp.1
 help2man -N --help-option=-help --no-discard-stderr --version-string=%{version} %{buildroot}%{_bindir}/SvtAv1EncApp > %{buildroot}%{_mandir}/man1/SvtAv1EncApp.1
 
 pushd gstreamer-plugin
@@ -97,22 +115,17 @@ pushd gstreamer-plugin
 popd
 
 %files
-%{_bindir}/SvtAv1DecApp
 %{_bindir}/SvtAv1EncApp
-%{_mandir}/man1/SvtAv1DecApp.1*
 %{_mandir}/man1/SvtAv1EncApp.1*
 
 %files libs
-%license LICENSE.md PATENTS.md
+%license LICENSE.md PATENTS.md third_party/fastfeat/LICENSE.fastfeat third_party/safestringlib/LICENSE.safestringlib
 %doc CHANGELOG.md CONTRIBUTING.md README.md
-%{_libdir}/libSvtAv1Dec.so.0*
 %{_libdir}/libSvtAv1Enc.so.2*
 
 %files devel
 %{_includedir}/%{name}
-%{_libdir}/libSvtAv1Dec.so
 %{_libdir}/libSvtAv1Enc.so
-%{_libdir}/pkgconfig/SvtAv1Dec.pc
 %{_libdir}/pkgconfig/SvtAv1Enc.pc
 
 %files devel-docs
